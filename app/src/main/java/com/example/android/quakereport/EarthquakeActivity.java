@@ -15,10 +15,14 @@
  */
 package com.example.android.quakereport;
 
+import android.content.AsyncTaskLoader;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -28,7 +32,7 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
-public class EarthquakeActivity extends AppCompatActivity {
+public class EarthquakeActivity extends AppCompatActivity implements android.app.LoaderManager.LoaderCallbacks<ArrayList<quakeData>> {
 
     public static final String LOG_TAG = EarthquakeActivity.class.getName();
     //usgs query url return top 10 resent earth quakes happen in the world
@@ -46,7 +50,9 @@ public class EarthquakeActivity extends AppCompatActivity {
 
         mAdapter=new quakeAdapter(earthquakes,this);
 
-        new EarthquakeAsynkTask().execute();
+        getLoaderManager().initLoader(1,null,this);
+
+        //new EarthquakeAsynkTask().execute();
 
         earthquakeListView.setAdapter(mAdapter);
 
@@ -64,22 +70,24 @@ public class EarthquakeActivity extends AppCompatActivity {
         });
     }
 
-    private class EarthquakeAsynkTask extends AsyncTask<Void , Void ,ArrayList<quakeData>>
-    {
 
-        @Override
-        protected ArrayList<quakeData> doInBackground(Void... voids) {
-            return QueryUtils.extractEarthquakes();
+    @Override
+    public android.content.Loader<ArrayList<quakeData>> onCreateLoader(int i, Bundle bundle) {
+        return new EarthquakeLoader(this);
+    }
+
+    @Override
+    public void onLoadFinished(android.content.Loader<ArrayList<quakeData>> loader, ArrayList<quakeData> data) {
+        mAdapter.clear();
+
+        if(data!=null && !data.isEmpty())
+        {
+            mAdapter.addAll(data);
         }
+    }
 
-        @Override
-        protected void onPostExecute(ArrayList<quakeData> quakeData) {
-            mAdapter.clear();
+    @Override
+    public void onLoaderReset(android.content.Loader<ArrayList<quakeData>> loader) {
 
-            if(quakeData!=null && !quakeData.isEmpty())
-            {
-                mAdapter.addAll(quakeData);
-            }
-        }
     }
 }
