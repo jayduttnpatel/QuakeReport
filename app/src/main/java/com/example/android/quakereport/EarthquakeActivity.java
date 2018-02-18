@@ -15,20 +15,14 @@
  */
 package com.example.android.quakereport;
 
-import android.content.AsyncTaskLoader;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -52,8 +46,6 @@ public class EarthquakeActivity extends AppCompatActivity implements android.app
 
         getLoaderManager().initLoader(1,null,this);
 
-        //new EarthquakeAsynkTask().execute();
-
         earthquakeListView.setAdapter(mAdapter);
 
         ListView listView= (ListView) findViewById(R.id.list);
@@ -68,6 +60,8 @@ public class EarthquakeActivity extends AppCompatActivity implements android.app
                 }
             }
         });
+
+        listView.setEmptyView((TextView)findViewById(R.id.Empty_text_view));
     }
 
 
@@ -84,10 +78,15 @@ public class EarthquakeActivity extends AppCompatActivity implements android.app
         {
             mAdapter.addAll(data);
         }
+        else
+        {
+            TextView txt=(TextView)findViewById(R.id.Empty_text_view);
+            txt.setText("Data not found");
+        }
     }
 
     @Override
     public void onLoaderReset(android.content.Loader<ArrayList<quakeData>> loader) {
-
+        mAdapter.clear();
     }
 }
