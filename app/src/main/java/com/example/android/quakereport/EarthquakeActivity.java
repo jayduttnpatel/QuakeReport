@@ -15,13 +15,17 @@
  */
 package com.example.android.quakereport;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -38,6 +42,18 @@ public class EarthquakeActivity extends AppCompatActivity implements android.app
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.earthquake_activity);
+
+        //check internet connection
+        ConnectivityManager cm =(ConnectivityManager)getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = (activeNetwork != null && activeNetwork.isConnectedOrConnecting());
+        if(!isConnected)
+        {
+            ((ProgressBar)findViewById(R.id.progress_bar)).setVisibility(View.GONE);
+            ((TextView)findViewById(R.id.Empty_text_view)).setText("No Internet Connection!!");
+            return;
+        }
+
 
         // Find a reference to the {@link ListView} in the layout
         ListView earthquakeListView = (ListView) findViewById(R.id.list);
@@ -62,6 +78,9 @@ public class EarthquakeActivity extends AppCompatActivity implements android.app
         });
 
         listView.setEmptyView((TextView)findViewById(R.id.Empty_text_view));
+
+
+
     }
 
 
@@ -73,6 +92,8 @@ public class EarthquakeActivity extends AppCompatActivity implements android.app
     @Override
     public void onLoadFinished(android.content.Loader<ArrayList<quakeData>> loader, ArrayList<quakeData> data) {
         mAdapter.clear();
+        ProgressBar loading=(ProgressBar)findViewById(R.id.progress_bar);
+        loading.setVisibility(View.GONE);
 
         if(data!=null && !data.isEmpty())
         {
@@ -81,7 +102,7 @@ public class EarthquakeActivity extends AppCompatActivity implements android.app
         else
         {
             TextView txt=(TextView)findViewById(R.id.Empty_text_view);
-            txt.setText("Data not found");
+            txt.setText("Earthquake Data not found");
         }
     }
 

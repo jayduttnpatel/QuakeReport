@@ -22,7 +22,7 @@ public class EarthquakeLoader extends android.content.AsyncTaskLoader<ArrayList<
 
     @Override
     protected void onStartLoading() {
-        // super.onStartLoading();
+        super.onStartLoading();
         forceLoad();
     }
 }
